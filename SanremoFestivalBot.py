@@ -3,10 +3,13 @@ from discord import app_commands
 from datetime import datetime, timedelta
 import os
 
-# Sanremo Festival typically runs in early February (usually first week)
-# 2026 edition: February 10-14, 2026
-SANREMO_2026_START = datetime(2026, 2, 10, 20, 30)  # Evening start
-SANREMO_2026_END = datetime(2026, 2, 14, 23, 59)
+# Install required packages:
+# pip install discord.py
+
+# Sanremo Festival 2026 edition
+# Dates: February 24-28, 2026
+SANREMO_2026_START = datetime(2026, 2, 24, 20, 30)  # Evening start 
+SANREMO_2026_END = datetime(2026, 2, 28, 23, 59)
 
 class SanremoBot(discord.Client):
     def __init__(self):
@@ -68,9 +71,36 @@ async def sanremo(interaction: discord.Interaction):
     
     await interaction.response.send_message(message)
 
+def load_token_from_file(filename='token.env'):
+    """Load Discord bot token from environment file."""
+    try:
+        with open(filename, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    key, value = line.split('=', 1)
+                    if key.strip() == 'DISCORD_BOT_TOKEN':
+                        token = value.strip()
+                        if token and token != 'your_bot_token_here':
+                            return token
+        return None
+    except FileNotFoundError:
+        with open(filename, 'w') as f:
+            f.write('DISCORD_BOT_TOKEN=your_bot_token_here\n')
+        print(f"Created {filename} file. Please set your Discord bot token.")
+        return None
+    except Exception as e:
+        print(f"Error reading token file: {e}")
+        return None
+
+
 # Run the bot
 if __name__ == "__main__":
-    TOKEN = os.getenv('DISCORD_BOT_TOKEN')
-    
+    TOKEN = load_token_from_file()
+
     if not TOKEN:
-        print("Error: DISCORD_BOT_TOKEN environment
+        print("Error: DISCORD_BOT_TOKEN not found or not set in token.env!")
+        print("Please set your Discord bot token in the token.env file.")
+        exit(1)
+
+    bot.run(TOKEN)
