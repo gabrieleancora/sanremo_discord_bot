@@ -1,76 +1,90 @@
-import discord
-from discord import app_commands
-from datetime import datetime, timedelta
-import os
+# Sanremo Festival Discord Bot 🎵
 
-# Sanremo Festival typically runs in early February (usually first week)
-# 2026 edition: February 10-14, 2026
-SANREMO_2026_START = datetime(2026, 2, 10, 20, 30)  # Evening start
-SANREMO_2026_END = datetime(2026, 2, 14, 23, 59)
+A Discord bot that tracks the status of the Sanremo Music Festival (Festival della Canzone Italiana di Sanremo), one of Italy's most prestigious and longest-running music competitions.
 
-class SanremoBot(discord.Client):
-    def __init__(self):
-        intents = discord.Intents.default()
-        super().__init__(intents=intents)
-        self.tree = app_commands.CommandTree(self)
+## Features
 
-    async def setup_hook(self):
-        # Sync commands with Discord
-        await self.tree.sync()
-        print("Commands synced!")
+- **Real-time Festival Status**: Check if the festival is currently happening, hasn't started yet, or has ended
+- **Countdown Timer**: See exactly how much time remains until the festival starts or ends
+- **Slash Command Interface**: Easy-to-use `/sanremo` command
+- **Italian Language Support**: Messages in Italian for an authentic experience
 
-# Initialize bot
-bot = SanremoBot()
+## Installation
 
-@bot.event
-async def on_ready():
-    print(f'{bot.user} has connected to Discord!')
-    print(f'Bot is in {len(bot.guilds)} guilds')
+### Prerequisites
 
-@bot.tree.command(name="sanremo", description="Check the status of the Sanremo Festival")
-async def sanremo(interaction: discord.Interaction):
-    """Responds with information about the Sanremo Festival"""
-    
-    now = datetime.now()
-    
-    # Check if the festival is currently happening
-    if SANREMO_2026_START <= now <= SANREMO_2026_END:
-        # Festival is currently on
-        time_remaining = SANREMO_2026_END - now
-        days = time_remaining.days
-        hours = time_remaining.seconds // 3600
-        minutes = (time_remaining.seconds % 3600) // 60
-        
-        message = f"🎵 **Il Festival di Sanremo è IN CORSO!** 🎵\n\n"
-        message += f"Tempo rimanente: {days} giorni, {hours} ore e {minutes} minuti"
-        
-    elif now < SANREMO_2026_START:
-        # Festival hasn't started yet
-        time_until = SANREMO_2026_START - now
-        days = time_until.days
-        hours = time_until.seconds // 3600
-        minutes = (time_until.seconds % 3600) // 60
-        
-        message = f"🎤 **Il Festival di Sanremo non è ancora iniziato** 🎤\n\n"
-        message += f"Manca: {days} giorni, {hours} ore e {minutes} minuti\n"
-        message += f"Inizio previsto: {SANREMO_2026_START.strftime('%d/%m/%Y alle %H:%M')}"
-        
-    else:
-        # Festival has ended
-        time_since = now - SANREMO_2026_END
-        days = time_since.days
-        hours = time_since.seconds // 3600
-        minutes = (time_since.seconds % 3600) // 60
-        
-        message = f"🎭 **Il Festival di Sanremo è terminato** 🎭\n\n"
-        message += f"Tempo trascorso: {days} giorni, {hours} ore e {minutes} minuti\n"
-        message += f"Concluso il: {SANREMO_2026_END.strftime('%d/%m/%Y alle %H:%M')}"
-    
-    await interaction.response.send_message(message)
+- Python 3.12 or higher
+- pip package manager
+- A Discord Bot Token ([create one here](https://discord.com/developers/applications))
 
-# Run the bot
-if __name__ == "__main__":
-    TOKEN = os.getenv('DISCORD_BOT_TOKEN')
-    
-    if not TOKEN:
-        print("Error: DISCORD_BOT_TOKEN environment
+### Setup
+
+1. Clone the repository: 
+```bash 
+git clone https://github.com/yourusername/sanremo_discord_bot.git 
+cd sanremo_discord_bot
+```
+2. Install required dependencies:
+```bash 
+pip install discord.py requests
+```
+3. Configure your bot token:
+   - Create a `token.env` file in the project root
+   - Add your Discord bot token:
+   ```
+   DISCORD_BOT_TOKEN=your_bot_token_here
+   ```
+4. Run the bot:
+```bash
+python SanremoFestivalBot.py
+```
+
+
+## Usage
+
+Once the bot is added to your Discord server, use the following command:
+
+- `/sanremo` - Check the current status of the Sanremo Festival
+
+### Example Responses
+
+**Before the festival:**
+> 🎤 **Il Festival di Sanremo non è ancora iniziato** 🎤
+> 
+> Manca: 15 giorni, 8 ore e 30 minuti
+> Inizio previsto: 24/02/2026 alle 20:30
+
+**During the festival:**
+> 🎵 **Il Festival di Sanremo è IN CORSO!** 🎵
+> 
+> Tempo rimanente: 2 giorni, 3 ore e 15 minuti
+
+**After the festival:**
+> 🎭 **Il Festival di Sanremo è terminato** 🎭
+> 
+> Tempo trascorso: 5 giorni, 10 ore e 45 minuti
+> Concluso il: 28/02/2026 alle 23:59
+
+## Festival Information
+
+The bot is currently configured for the **2026 Sanremo Festival**:
+- **Start**: February 10, 2026 at 20:30
+- **End**: February 14, 2026 at 23:59
+
+To update dates for future editions, modify the `SANREMO_2026_START` and `SANREMO_2026_END` constants in `SanremoFestivalBot.py`.
+
+## Contributing
+
+Contributions are welcome! Feel free to:
+- Report bugs
+- Suggest new features
+- Submit pull requests
+
+## License
+
+This project is licensed under the terms specified in the LICENSE file.
+
+## Acknowledgments
+
+- Built with [discord.py](https://github.com/Rapptz/discord.py)
+- Inspired by the legendary Sanremo Music Festival 🎶
